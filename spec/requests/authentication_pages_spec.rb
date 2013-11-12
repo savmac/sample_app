@@ -40,6 +40,8 @@ describe "Authentication" do
   		describe "followed by signout" do
   			before { click_link "Sign out" }
   			it { should have_link("Sign in") }
+        it { should_not have_link("Profile") }
+        it { should_not have_link("Settings") }
   		end
   	end
   end
@@ -94,6 +96,17 @@ describe "Authentication" do
         before { delete user_path(user) }
         specify { expect(response).to redirect_to(root_url) }
       end 
+    end
+
+    describe "as an admin user" do
+      let(:admin) { FactoryGirl.create(:admin) }
+
+      before { sign_in admin, no_capybara: true }
+
+      describe "submitting a DELETE request to their own Users#destroy action" do
+        before { delete user_path(admin) }
+        specify { expect(response).to redirect_to(root_url) }
+      end
     end
 
     describe "as wrong user" do
