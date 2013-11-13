@@ -64,6 +64,10 @@ describe "UserPages" do
     let!(:m1) { FactoryGirl.create(:micropost, user: user, content: "Foo") }
     let!(:m2) { FactoryGirl.create(:micropost, user: user, content: "Bar") }
 
+    let(:other_user) { FactoryGirl.create(:user) }
+    let!(:m3) { FactoryGirl.create(:micropost, user: other_user, content: "Baz") }
+    let!(:m4) { FactoryGirl.create(:micropost, user: other_user, content: "Fuz") }
+
   	before { visit user_path(user) }
 
   	it { should have_content(user.name) }
@@ -73,6 +77,20 @@ describe "UserPages" do
       it { should have_content(m1.content) }
       it { should have_content(m2.content) }
       it { should have_content(user.microposts.count) }
+    end
+
+    describe "delete links" do
+      before { sign_in user }
+
+      describe "for a user's own microposts" do
+        it { should have_link("delete") }
+      end
+
+      describe "for an other user's microposts" do
+        before { visit user_path(other_user) }
+
+        it { should_not have_link("delete") }
+      end
     end
   end
 
