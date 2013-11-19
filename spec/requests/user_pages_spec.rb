@@ -107,6 +107,16 @@ describe "UserPages" do
       it { should have_content(user.microposts.count) }
     end
 
+    describe "follower/following counts" do
+      before do 
+        other_user.follow!(user)
+        visit user_path(user)
+      end
+
+      it { should have_link("0 following", href: following_user_path(user)) }
+      it { should have_link("1 followers", href: followers_user_path(user)) }
+    end
+
     describe "delete links" do
       before { sign_in user }
 
